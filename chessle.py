@@ -170,20 +170,30 @@ def get_guess_outcome(guess, solution):
 
 def simulate_run(solution):
     info = Info()
-    #opening_strs = [['_'.join(move) for move in opening] for opening in info.openings]
-    #assert '_'.join(solution) in opening_strs
     assert solution in info.openings
     guess = None
     num_guesses = 0
-    print(f'Solution: {solution}')
+    print(f'Solution: {pformat_opening(solution)}')
     while guess != solution:
         guess = info.choose_next_guess()
         num_guesses += 1
         outcome = get_guess_outcome(guess, solution)
-        print(f'Guessing {guess} with outcome {outcome}')
+        print(f'Guessing: {pformat_opening(guess)} with outcome {pformat_outcome(outcome)}')
         info.parse_outcome(guess, outcome)
-    print(f'Found solution {solution} in {num_guesses} guesses!')
+    print(f'Found solution {pformat_opening(solution)} in {num_guesses} guesses!')
     return num_guesses
+
+
+def pformat_opening(opening):
+    return ' '.join([f'{f"{i//2+1}. " if i % 2 == 0 else ""}{move}' for i, move in enumerate(opening)])
+
+
+def pformat_outcome(outcome):
+    outcome = ''.join(outcome)
+    outcome = outcome.replace('c', '🟩')
+    outcome = outcome.replace('m', '🟨')
+    outcome = outcome.replace('i', '⬛')
+    return outcome
 
 
 def simulate_runs(n=100):
