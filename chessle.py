@@ -5,7 +5,10 @@ import pickle
 import chess
 import chess.polyglot
 
+import lichess
+
 OPENINGS_PICKLE_FILE = Path('openings.pkl')
+OPENING_LEN = 10
 
 
 class Info:
@@ -101,8 +104,6 @@ def get_openings_from_position(reader, board, remaining_moves):
     for entry in reader.find_all(board):
         san_move = board.san(entry.move)
         board.push(entry.move)
-        if san_move == 'd4' and remaining_moves == 10:
-            import pdb; pdb.set_trace()
         next_openings = get_openings_from_position(
             reader, board, remaining_moves - 1)
         board.pop()
@@ -112,19 +113,15 @@ def get_openings_from_position(reader, board, remaining_moves):
     return openings
 
 
-def get_all_openings(regenerate=False):
-    if regenerate or not OPENINGS_PICKLE_FILE.exists():
-        openings = gen_all_openings()
-        with open(OPENINGS_PICKLE_FILE, 'wb') as f:
-            pickle.dump(openings, f)
-    else:
-        with open(OPENINGS_PICKLE_FILE, 'rb') as f:
-            openings = pickle.load(f)
+def get_all_openings():
+    df = lichess.get_openings_df()
+    openings = df['san_moves']
+    openings = [opening for opening in openings if len(opening) == 10]
     return openings
 
 
 def gen_all_openings():
-    opening_book_path = Path('Human.bin')
+    opening_book_path = Path('opening_books', 'Human.bin')
     assert opening_book_path.exists()
     board = chess.Board()
     opening_len = 10
@@ -138,7 +135,7 @@ def gen_all_openings():
 def get_move_counts(openings):
     moves = {}
     for opening in openings:
-        # TODO: should maybe deal with duplicate letters here, or maybe not.
+        # TODO: should maybe deal with duplicate moves here, or maybe not.
         for move in opening:
             moves[move] = moves.get(move, 0) + 1
     return moves
