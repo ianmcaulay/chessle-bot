@@ -204,13 +204,25 @@ def simulate_runs(n=100):
     return all_num_guesses
 
 
+def run_interactively():
+    info = Info()
+    while True:
+        guess = info.choose_next_guess()
+        print(f'Guess = {guess}')
+        outcome = input('Outcome?')
+        if set(outcome) == {'c'}:
+            print('Correct!')
+            return
+        info.parse_outcome(guess, outcome)
+
+
+def opening_str_to_tuple(opening_str):
+    remove_strs = {'1.', '2.', '3.', '4.', '5.'}
+    return tuple(move for move in opening_str.split(' ') if move not in remove_strs)
+
+
 def main():
     ...
-    from pprint import pprint
-    openings = get_all_openings()
-    info = Info()
-    import pdb; pdb.set_trace()
-    simulate_runs(1)
 
 
 if __name__ == '__main__':
