@@ -76,6 +76,7 @@ class Info:
                 max_score = score
                 max_openings.append(opening)
         # Arbitrarily choose the first one.
+        print(f'Remaining openings: {len(self.openings)}')
         return max_openings[0]
 
     def parse_outcome(self, guess, outcome):
@@ -139,14 +140,14 @@ def simulate_run(solution):
     assert solution in info.openings
     guess = None
     num_guesses = 0
-    print(f'Solution: {pformat_opening(solution)}')
+    print(f'Solution: "{pformat_opening(solution)}"')
     while guess != solution:
         guess = info.choose_next_guess()
         num_guesses += 1
         outcome = get_guess_outcome(guess, solution)
-        print(f'Guessing: {pformat_opening(guess)} with outcome {pformat_outcome(outcome)}')
+        print(f'Guessing: "{pformat_opening(guess)}" with outcome {pformat_outcome(outcome)}')
         info.parse_outcome(guess, outcome)
-    print(f'Found solution {pformat_opening(solution)} in {num_guesses} guesses!')
+    print(f'Found solution "{pformat_opening(solution)}" in {num_guesses} guesses!')
     return num_guesses
 
 
