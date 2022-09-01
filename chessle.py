@@ -1,9 +1,6 @@
 from collections import Counter
 import random
 from pathlib import Path
-import pickle
-import chess
-import chess.polyglot
 
 import lichess
 
@@ -97,38 +94,10 @@ class Info:
                 self.add_non_idx(i, guess[i])
 
 
-def get_openings_from_position(reader, board, remaining_moves):
-    if remaining_moves == 0:
-        return [()]
-    openings = []
-    for entry in reader.find_all(board):
-        san_move = board.san(entry.move)
-        board.push(entry.move)
-        next_openings = get_openings_from_position(
-            reader, board, remaining_moves - 1)
-        board.pop()
-        # TODO: not sure if this works when there are no moves left.
-        for next_opening in next_openings:
-            openings.append((san_move,) + next_opening)
-    return openings
-
-
 def get_all_openings():
     df = lichess.get_openings_df()
     openings = df['san_moves']
     openings = [opening for opening in openings if len(opening) == 10]
-    return openings
-
-
-def gen_all_openings():
-    opening_book_path = Path('opening_books', 'Human.bin')
-    assert opening_book_path.exists()
-    board = chess.Board()
-    opening_len = 10
-    with chess.polyglot.open_reader(opening_book_path) as reader:
-        openings = get_openings_from_position(reader, board, opening_len)
-    # Some openings may be too short.
-    openings = [opening for opening in openings if len(opening) == opening_len]
     return openings
 
 
